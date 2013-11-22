@@ -416,14 +416,21 @@ valid(empty_array, Obj) when is_list(Obj) ->
                 expected_type = array,
                 found_type = array,
                 found = Obj};
+valid({L}, Obj=[]) when is_list(L) ->
+    #ej_invalid{type = json_type, key = undefined,
+		expected_type = object,
+		found_type = json_type(Obj),
+		found = Obj};
 valid({L}, Obj={OL}) when is_list(L) andalso is_list(OL) ->
     valid(L, Obj, #spec_ctx{});
 valid({L}, Obj={struct, OL}) when is_list(L) andalso is_list(OL) ->
     valid(L, Obj, #spec_ctx{});
+valid({L}, Obj) when is_list(L) andalso is_list(Obj) ->
+    valid(L, Obj, #spec_ctx{});
 valid({L}, Obj) when is_list(L) ->
     #ej_invalid{type = json_type, key = undefined,
                 expected_type = object,
-                found_type = json_type(Obj),
+		found_type = json_type(Obj),
                 found = Obj}.
 
 valid([{{Opt, Key}, ValSpec}|Rest], Obj, Ctx = #spec_ctx{path = Path} = Ctx)
